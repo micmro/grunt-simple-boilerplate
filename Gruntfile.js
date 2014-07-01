@@ -51,7 +51,8 @@ module.exports = function( grunt ) {
 		}
 	});
 
-	// dev server / auto reload
-	grunt.registerTask('dev', ['connect:dev', 'watch', 'open:dev']);
+	//dev server / auto reload
+	//remove open task in linux
+	grunt.registerTask('dev', ['connect:dev', 'open:dev', 'watch']);
 	grunt.registerTask('default', 'dev');
 };
