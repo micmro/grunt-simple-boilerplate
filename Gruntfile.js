@@ -1,57 +1,57 @@
-/*global module */
+/* Grunt file for grunt-simple-boilerplate*/
 
 
 module.exports = function( grunt ) {
 	"use strict";
 
+	//load all tasks specified in package.json
 	require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
 
 
 	grunt.initConfig({
-
+		//task to run other tasks (like reload) on file changes
 		watch: {
 			loadFiles: {
-				files: ['index.html','*.js','*.css']
+				//refresh for html and all files in assets folder
+				files: ['*.html','assets/**']
 			},
 			options: {
-				// default port is 35729
 				livereload: 35729,
-			},
-			//tasks: ['jshint'],
+			}
 		},
 
 		// grunt-contrib-connect will serve the files of the project
 		// on specified port and hostname and injects the live reload script
 		connect: {
-			all: {
+			dev: {
 				options:{
 					port: 9000,
-					hostname: "0.0.0.0",
+					hostname: "localhost",
+					base: "./",
 					middleware: function(connect, options) {
 						return [
 							require('connect-livereload')({
 								port: grunt.config.get("watch.options.livereload")
 							})
 							// Serve the project folder
-							,connect.static(options.base)
+							,connect.static(Array.isArray(options.base) ? options.base[0] : options.base)
+							,connect.directory(options.base)
 						];
 					}
 				}			
 			}
 		},
 
+		//opens local sever in browser (currently not working in Linux)
 		open: {
-			all: {
-				path: 'http://localhost:<%= connect.all.options.port%>'
+			dev: {
+				path: 'http://<%= connect.dev.options.hostname%>:<%= connect.dev.options.port%>'
 			}
 		}
 	});
 
-	// build
-	grunt.loadNpmTasks('grunt-contrib-connect');
-
 	// dev server / auto reload
-	grunt.registerTask('dev', ['connect', 'open', 'watch']);
+	grunt.registerTask('dev', ['connect:dev', 'watch', 'open:dev']);
 	grunt.registerTask('default', 'dev');
 };
